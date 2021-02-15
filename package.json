@@ -1,0 +1,29 @@
+{
+  "name": "classroom-report-backstage-api",
+  "version": "1.0.0",
+  "description": "实验室报告后台api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Flobby949/classroom-report-backstage.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Flobby949/classroom-report-backstage/issues"
+  },
+  "homepage": "https://github.com/Flobby949/classroom-report-backstage#readme",
+  "dependencies": {
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "koa-router": "^10.0.0",
+    "koa2-cors": "^2.0.6",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6"
+  }
+}

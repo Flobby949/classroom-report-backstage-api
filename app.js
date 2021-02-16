@@ -23,7 +23,7 @@ app.use(
 
 // 全局中间件， ctx，body即向客户端返回的内容
 app.use(async (ctx, next) => {
-    // ctx.state.env = ENV
+    ctx.state.env = ENV
     // ctx.body = "后台管理系统api"
     await next()
 })

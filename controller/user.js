@@ -157,12 +157,14 @@ router.post('/delete', async (ctx, next) => {
 router.get('/list', async (ctx, next) => {
     const params = ctx.request.query
     const query = `db.collection('admin')
-        .skip('${params.start}')
-        .limit('${params.count}')
-        .orderBy('create_time', 'desc')
+        .skip(${params.start})
+        .limit(${params.count})
+        .orderBy('authority', 'desc')
+        .orderBy('create_time', 'asc')
         .get()
         `
     const res = await callCloudDB(ctx, 'databasequery', query)
+    console.log(res.data)
     // 序列化管理员对象数组
     let data = []
     for (let i = 0, len = res.data.length; i < len; i++) {

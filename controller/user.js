@@ -4,7 +4,7 @@ const callCloudFn = require('../utils/callCloudFn.js')//引用访问小程序云
 const callCloudDB = require('../utils/callCloudDB.js')//引用访问小程序云函数文件
 
 // 添加管理员
-router.post('/addAdmin', async(ctx, next) => {
+router.post('/addAdmin', async (ctx, next) => {
     const params = ctx.request.body
     console.log(params)
     // 验证数据库中是否有该工号
@@ -13,7 +13,7 @@ router.post('/addAdmin', async(ctx, next) => {
     }).get()`
     const validRes = await callCloudDB(ctx, 'databasequery', valid)
     console.log(validRes)
-    if(validRes.data.length == 0){
+    if (validRes.data.length == 0) {
         // 工号不存在, 添加记录
         const query = `db.collection('admin').add({
             data: {
@@ -31,7 +31,7 @@ router.post('/addAdmin', async(ctx, next) => {
             code: 20000,
             data: res
         }
-    }else {
+    } else {
         ctx.body = {
             code: -1,
             data: '账号已存在'
@@ -57,7 +57,7 @@ router.post('/loginByJN', async (ctx, next) => {
                 code: 20000,
                 data: info
             }
-        }else {
+        } else {
             ctx.body = {
                 code: -1,
                 data: "密码错误"
@@ -79,7 +79,7 @@ router.post('/loginByPhone', async (ctx, next) => {
         phone: '${params.phone}'
     }).get()`
     const res = await callCloudDB(ctx, 'databasequery', query)
-    
+
     // 判断账号是否存在
     if (res.data.length != 0) {
         // 序列化
@@ -90,7 +90,7 @@ router.post('/loginByPhone', async (ctx, next) => {
                 code: 20000,
                 data: info
             }
-        }else {
+        } else {
             ctx.body = {
                 code: -1,
                 data: "密码错误"
@@ -150,6 +150,30 @@ router.post('/delete', async (ctx, next) => {
     ctx.body = {
         code: 20000,
         data: res
+    }
+})
+
+// 查询所有管理员
+router.get('/list', async (ctx, next) => {
+    const params = ctx.request.query
+    const query = `db.collection('admin')
+        .skip('${params.start}')
+        .limit('${params.count}')
+        .orderBy('create_time', 'desc')
+        .get()
+        `
+    const res = await callCloudDB(ctx, 'databasequery', query)
+    // 序列化管理员对象数组
+    let data = []
+    for (let i = 0, len = res.data.length; i < len; i++) {
+        data.push(
+            JSON.parse(res.data[i])
+        )
+    }
+    console.log(data)
+    ctx.body = {
+        data,
+        code: 20000,
     }
 })
 

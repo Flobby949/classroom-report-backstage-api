@@ -7,12 +7,12 @@ const koaBody = require('koa-body')
 const ENV = 'flobby-9gntrh5195123e3d'
 
 // 跨域
-// app.use(
-//     cors({
-//         origin: ['http://localhost:9528'],
-//         credentials: true,
-//     })
-// )
+app.use(
+    cors({
+        origin: ['http://localhost:9528'],
+        credentials: true,
+    })
+)
 
 // 接收post参数解析
 app.use(

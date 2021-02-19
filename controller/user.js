@@ -15,13 +15,14 @@ router.post('/addAdmin', async (ctx, next) => {
     console.log(validRes)
     if (validRes.data.length == 0) {
         // 工号不存在, 添加记录
+        const dt = new Date()
         const query = `db.collection('admin').add({
             data: {
                 job_number: '${params.job_number}',
                 password: '${params.password}',
                 phone: '${params.phone}',
                 username: '${params.username}',
-                create_time: db.serverDate(),
+                create_time: '${dt}',
                 authority: '0',
                 wx_openid: ''
             }
@@ -33,7 +34,7 @@ router.post('/addAdmin', async (ctx, next) => {
         }
     } else {
         ctx.body = {
-            code: -1,
+            code: 20000,
             data: '账号已存在'
         }
     }
@@ -59,13 +60,13 @@ router.post('/loginByJN', async (ctx, next) => {
             }
         } else {
             ctx.body = {
-                code: -1,
+                code: 20000,
                 data: "密码错误"
             }
         }
     } else {
         ctx.body = {
-            code: -1,
+            code: 20000,
             data: "用户不存在"
         }
     }
@@ -92,13 +93,13 @@ router.post('/loginByPhone', async (ctx, next) => {
             }
         } else {
             ctx.body = {
-                code: -1,
+                code: 20000,
                 data: "密码错误"
             }
         }
     } else {
         ctx.body = {
-            code: -1,
+            code: 20000,
             data: "用户不存在"
         }
     }
@@ -143,9 +144,7 @@ router.post('/updateAuth', async (ctx, next) => {
 router.post('/delete', async (ctx, next) => {
     const params = ctx.request.query
     console.log(params)
-    const query = `db.collection('admin').where({
-        job_number: '${params.job_number}'
-    }).remove()`
+    const query = `db.collection('admin').doc('${params.id}').remove()`
     const res = await callCloudDB(ctx, 'databasedelete', query)
     ctx.body = {
         code: 20000,
@@ -157,14 +156,13 @@ router.post('/delete', async (ctx, next) => {
 router.get('/list', async (ctx, next) => {
     const params = ctx.request.query
     const query = `db.collection('admin')
-        .skip(${params.start})
-        .limit(${params.count})
-        .orderBy('authority', 'desc')
-        .orderBy('create_time', 'asc')
-        .get()
-        `
+            .skip(${params.start})
+            .limit(${params.count})
+            .orderBy('authority','desc')
+            .orderBy('create_time','asc')
+            .get()
+            `
     const res = await callCloudDB(ctx, 'databasequery', query)
-    console.log(res.data)
     // 序列化管理员对象数组
     let data = []
     for (let i = 0, len = res.data.length; i < len; i++) {
@@ -172,7 +170,6 @@ router.get('/list', async (ctx, next) => {
             JSON.parse(res.data[i])
         )
     }
-    console.log(data)
     ctx.body = {
         data,
         code: 20000,

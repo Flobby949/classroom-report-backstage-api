@@ -2,6 +2,8 @@ const Router = require('koa-router')//引用koa-router
 const router = new Router()//创建路由实例
 const callCloudFn = require('../utils/callCloudFn.js')//引用访问小程序云函数文件
 const callCloudDB = require('../utils/callCloudDB.js')//引用访问小程序云函数文件
+//导入加密模块
+const crypto = require("crypto");
 
 // 添加管理员
 router.post('/addAdmin', async (ctx, next) => {
@@ -16,10 +18,12 @@ router.post('/addAdmin', async (ctx, next) => {
     if (validRes.data.length == 0) {
         // 工号不存在, 添加记录
         const dt = new Date()
+        let md5 = crypto.createHash("md5");
+        let newPas = md5.update(params.password).digest("hex");
         const query = `db.collection('admin').add({
             data: {
                 job_number: '${params.job_number}',
-                password: '${params.password}',
+                password: '${newPas}',
                 phone: '${params.phone}',
                 username: '${params.username}',
                 create_time: '${dt}',
@@ -52,8 +56,10 @@ router.post('/loginByJN', async (ctx, next) => {
     if (res.data.length != 0) {
         // 序列化
         const info = JSON.parse(res.data)
+        let md5 = crypto.createHash("md5");
+        let newPas = md5.update(params.password).digest("hex");
         // 判断密码是否正确
-        if (info.password === params.password) {
+        if (info.password === newPas) {
             ctx.body = {
                 code: 20000,
                 data: info
@@ -80,13 +86,14 @@ router.post('/loginByPhone', async (ctx, next) => {
         phone: '${params.phone}'
     }).get()`
     const res = await callCloudDB(ctx, 'databasequery', query)
-
     // 判断账号是否存在
     if (res.data.length != 0) {
         // 序列化
         const info = JSON.parse(res.data)
+        let md5 = crypto.createHash("md5");
+        let newPas = md5.update(params.password).digest("hex");
         // 判断密码是否正确
-        if (info.password === params.password) {
+        if (info.password === newPas) {
             ctx.body = {
                 code: 20000,
                 data: info
@@ -108,12 +115,14 @@ router.post('/loginByPhone', async (ctx, next) => {
 // 根据工号修改信息(手机号，密码)
 router.post('/updateInfo', async (ctx, next) => {
     const params = ctx.request.body
+    let md5 = crypto.createHash("md5");
+    let newPas = md5.update(params.password).digest("hex");
     const query = `db.collection('admin').where({
         job_number: '${params.job_number}'
     }).update({
         data: {
             phone: '${params.phone}',
-            password: '${params.password}'
+            password: '${newPas}'
         }
     })`
     const res = await callCloudDB(ctx, 'databaseupdate', query)

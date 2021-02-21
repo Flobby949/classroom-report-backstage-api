@@ -1,9 +1,11 @@
 const Router = require('koa-router')//引用koa-router
 const router = new Router()//创建路由实例
-const callCloudFn = require('../utils/callCloudFn.js')//引用访问小程序云函数文件
-const callCloudDB = require('../utils/callCloudDB.js')//引用访问小程序云函数文件
+const jsonwebtoken = require('jsonwebtoken'); // 引入jwt插件
+const callCloudDB = require('../utils/callCloudDB.js')//引用访问小程序云数据库文件
 //导入加密模块
 const crypto = require("crypto");
+// jwt SECRET
+const SECRET = 'flobby529'
 
 // 添加管理员
 router.post('/addAdmin', async (ctx, next) => {
@@ -44,7 +46,7 @@ router.post('/addAdmin', async (ctx, next) => {
     }
 })
 
-// 根据工号获取管理员信息
+// 根据工号登录
 router.post('/loginByJN', async (ctx, next) => {
     const params = ctx.request.body
     console.log(params)
@@ -60,9 +62,14 @@ router.post('/loginByJN', async (ctx, next) => {
         let newPas = md5.update(params.password).digest("hex");
         // 判断密码是否正确
         if (info.password === newPas) {
+            const token = jsonwebtoken.sign(
+                { authority: info.authority, id: info._id },  // 加密userToken
+                SECRET,
+                { expiresIn: '2h' }
+              )
             ctx.body = {
+                token,
                 code: 20000,
-                data: info
             }
         } else {
             ctx.body = {
@@ -78,7 +85,7 @@ router.post('/loginByJN', async (ctx, next) => {
     }
 })
 
-// 根据手机号获取管理员信息
+// 根据手机号登录
 router.post('/loginByPhone', async (ctx, next) => {
     const params = ctx.request.body
     console.log(params)
@@ -94,9 +101,14 @@ router.post('/loginByPhone', async (ctx, next) => {
         let newPas = md5.update(params.password).digest("hex");
         // 判断密码是否正确
         if (info.password === newPas) {
+            const token = jsonwebtoken.sign(
+                { authority: info.authority, id: info._id },  // 加密userToken
+                SECRET,
+                { expiresIn: '2h' }
+              )
             ctx.body = {
+                token,
                 code: 20000,
-                data: info
             }
         } else {
             ctx.body = {
@@ -109,6 +121,20 @@ router.post('/loginByPhone', async (ctx, next) => {
             code: 20000,
             data: "用户不存在"
         }
+    }
+})
+
+// 获取管理员信息
+router.get('/getInfo',async(ctx, next) => {
+    const token = ctx.request.query.token
+    let params = jsonwebtoken.verify(token, SECRET)
+    const query = `db.collection('admin').doc('${params.id}').get()`
+    const res = await callCloudDB(ctx, 'databasequery', query)
+    const data = JSON.parse(res.data)
+    console.log(data)
+    ctx.body = {
+        data,
+        code: 20000,
     }
 })
 

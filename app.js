@@ -5,11 +5,11 @@ const router = new Router()
 const cors = require('koa2-cors')
 const koaBody = require('koa-body')
 const ENV = 'flobby-9gntrh5195123e3d'
-
 // 跨域
 app.use(
     cors({
         origin: ['http://localhost:9528'],
+        // origin: ['https://flobby-3gkbs7rb8f7e282e-1305016829.tcloudbaseapp.com'],
         credentials: true,
     })
 )
@@ -44,3 +44,4 @@ app.listen(3000, () => {
     console.log('服务开启在3000端口')
     console.log('http://localhost:3000/')
 })
+// module.exports = app

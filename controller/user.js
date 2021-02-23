@@ -55,7 +55,7 @@ router.post('/loginByJN', async (ctx, next) => {
     }).get()`
     const res = await callCloudDB(ctx, 'databasequery', query)
     // 判断账号是否存在
-    if (res.data.length != 0) {
+    if (res.data != '') {
         // 序列化
         const info = JSON.parse(res.data)
         let md5 = crypto.createHash("md5");
@@ -66,7 +66,7 @@ router.post('/loginByJN', async (ctx, next) => {
                 { authority: info.authority, id: info._id },  // 加密userToken
                 SECRET,
                 { expiresIn: '2h' }
-              )
+            )
             ctx.body = {
                 token,
                 code: 20000,
@@ -94,7 +94,7 @@ router.post('/loginByPhone', async (ctx, next) => {
     }).get()`
     const res = await callCloudDB(ctx, 'databasequery', query)
     // 判断账号是否存在
-    if (res.data.length != 0) {
+    if (res.data != '') {
         // 序列化
         const info = JSON.parse(res.data)
         let md5 = crypto.createHash("md5");
@@ -105,7 +105,7 @@ router.post('/loginByPhone', async (ctx, next) => {
                 { authority: info.authority, id: info._id },  // 加密userToken
                 SECRET,
                 { expiresIn: '2h' }
-              )
+            )
             ctx.body = {
                 token,
                 code: 20000,
@@ -125,30 +125,53 @@ router.post('/loginByPhone', async (ctx, next) => {
 })
 
 // 获取管理员信息
-router.get('/getInfo',async(ctx, next) => {
+router.get('/getInfo', async (ctx, next) => {
     const token = ctx.request.query.token
     let params = jsonwebtoken.verify(token, SECRET)
     const query = `db.collection('admin').doc('${params.id}').get()`
     const res = await callCloudDB(ctx, 'databasequery', query)
-    const data = JSON.parse(res.data)
-    console.log(data)
-    ctx.body = {
-        data,
-        code: 20000,
+    console.log(res.data)
+    if (res.data != '') {
+        const data = JSON.parse(res.data)
+        console.log(data)
+        ctx.body = {
+            data,
+            code: 20000,
+        }
     }
 })
 
-// 根据工号修改信息(手机号，密码)
+// 修改信息(手机号，密码)
 router.post('/updateInfo', async (ctx, next) => {
-    const params = ctx.request.body
-    let md5 = crypto.createHash("md5");
-    let newPas = md5.update(params.password).digest("hex");
-    const query = `db.collection('admin').where({
-        job_number: '${params.job_number}'
-    }).update({
+    let params = ctx.request.body
+    const getOri = `db.collection('admin').doc('${params.id}').get()`
+    const oriInfo = await callCloudDB(ctx, 'databasequery', getOri)
+    console.log(oriInfo)
+    const oriRes = JSON.parse(oriInfo.data)
+    if (params.password.trim() != '') {
+        let md5 = crypto.createHash("md5");
+        let newPas = md5.update(params.password).digest("hex");
+        params.password = newPas
+    }
+    if (params.phone == '') {
+        params = {
+            id:params.id,
+            phone: oriRes.phone,
+            password: params.password
+        }
+    }
+    if (params.password == '') {
+        params = {
+            id:params.id,
+            phone: params.phone,
+            password: oriRes.password
+        }
+    }
+    console.log(params)
+    const query = `db.collection('admin').doc('${params.id}').update({
         data: {
             phone: '${params.phone}',
-            password: '${newPas}'
+            password: '${params.password}'
         }
     })`
     const res = await callCloudDB(ctx, 'databaseupdate', query)

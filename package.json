@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Flobby949/classroom-report-backstage#readme",
   "dependencies": {
+    "excel-export": "^0.5.1",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.1",
     "koa-body": "^4.2.0",

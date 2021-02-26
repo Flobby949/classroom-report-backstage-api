@@ -1,0 +1,16 @@
+{
+  "version": "2.0",
+  "envId": "flobby-3gkbs7rb8f7e282e",
+  "framework": {
+    "name": "classroom-report-backstage-api",
+    "plugins": {
+      "node": {
+        "use": "@cloudbase/framework-plugin-node",
+        "inputs": {
+          "name": "classroom-report-backstage-api",
+          "path": "/api"
+        }
+      }
+    }
+  }
+}

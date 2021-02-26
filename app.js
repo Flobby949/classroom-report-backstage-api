@@ -4,15 +4,15 @@ const Router = require('koa-router')
 const router = new Router()
 const cors = require('koa2-cors')
 const koaBody = require('koa-body')
-const ENV = 'flobby-9gntrh5195123e3d'
+const ENV = 'jinhuiqian-8gi1cox44dde5a5a'
 
 // 跨域
-// app.use(
-//     cors({
-//         origin: ['http://localhost:9528'],
-//         credentials: true,
-//     })
-// )
+app.use(
+    cors({
+        origin: ['http://localhost:9528'],
+        credentials: true,
+    })
+)
 
 // 接收post参数解析
 app.use(
@@ -30,13 +30,15 @@ app.use(async (ctx, next) => {
 
 // 通过require引入xxxxx模块
 const user = require('./controller/user.js')
+const report = require('./controller/report.js')
+
 
 // 给student模块使用定义根路由为 '/xxxxx'
 router.use('/user', user.routes())
+router.use('/report', report.routes())
 
 // 使用路由
 app.use(router.routes())
-
 app.use(router.allowedMethods())
 
 // 对3000端口监听，这是nodejs的默认端口，如果被占用，可以停止相应进程或换端口

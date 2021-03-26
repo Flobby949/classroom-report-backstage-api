@@ -221,6 +221,7 @@ router.get('/list', async (ctx, next) => {
             .get()
             `
     const res = await callCloudDB(ctx, 'databasequery', query)
+    console.log(res);
     // 序列化管理员对象数组
     let data = []
     for (let i = 0, len = res.data.length; i < len; i++) {

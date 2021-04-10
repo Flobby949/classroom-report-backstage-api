@@ -4,7 +4,9 @@ const Router = require('koa-router')
 const router = new Router()
 const cors = require('koa2-cors')
 const koaBody = require('koa-body')
-const ENV = 'jinhuiqian-8gi1cox44dde5a5a'
+// const ENV = 'jinhuiqian-8gi1cox44dde5a5a'
+
+const ENV = 'bainan-6gj8asqkd274ed17'
 
 // 跨域
 app.use(
@@ -31,11 +33,13 @@ app.use(async (ctx, next) => {
 // 通过require引入xxxxx模块
 const user = require('./controller/user.js')
 const report = require('./controller/report.js')
+const QRCode = require('./controller/DoQRCode.js')
 
 
 // 给student模块使用定义根路由为 '/xxxxx'
 router.use('/user', user.routes())
 router.use('/report', report.routes())
+router.use('/QR', QRCode.routes())
 
 // 使用路由
 app.use(router.routes())

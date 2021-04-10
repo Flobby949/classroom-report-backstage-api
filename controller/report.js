@@ -136,11 +136,10 @@ router.post("/updatestatus", async (ctx, next) => {
 //更新评分
 router.post("/updatescore", async (ctx, next) => {
   const params = ctx.request.body;
-  console.log(324);
-  console.log(params);
   const query = `db.collection('report').doc('${params._id}').update({
         data: {
             score: ${params.value}
+
         }
         })`;
   const res = await callCloudDB(ctx, "databaseupdate", query);
@@ -187,8 +186,6 @@ router.post("/filtertime", async (ctx, next) => {
 //shaixuan
 router.post("/filter", async (ctx, next) => {
   const params = ctx.request.body;
-  console.log(23423423);
-  console.log(params);
   const query = `db.collection('report').where(
     ${JSON.stringify(params)}
   ).get()`;

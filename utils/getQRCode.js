@@ -23,5 +23,4 @@ const QRCode = async (ctx, params) => {
             console.log(err)
         })
 }
-
 module.exports = QRCode//最后把方法暴露出去

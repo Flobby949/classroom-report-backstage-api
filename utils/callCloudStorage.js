@@ -6,6 +6,7 @@ const ENV = 'bainan-6gj8asqkd274ed17'
 const cloudStorage = {
   // 小程序码
      async uploadCode(ctx) {
+
         //1.获取文件上传链接
         const ACCESS_TOKEN = await getAccessToken()
         const file = ctx//文件对象

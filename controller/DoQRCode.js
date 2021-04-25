@@ -17,7 +17,7 @@ router.post('/addCode', async (ctx, next) => {
         const newQR = await QRCode(ctx, params)
         let imgName = `QRCode-${params.scene}.png`;
         let fileName = `upload-${params.scene}`;
-        let path = `E:/nodejs-Project/classroom-report-backstage-api/QrCode`
+        let path = `D:\mc`
         fs.writeFile(path + '/' + imgName, newQR, err => console.log(err))
         fs.writeFile(path + '/' + fileName, newQR, err => console.log(err))
         let file = {
@@ -40,7 +40,7 @@ router.post('/addCode', async (ctx, next) => {
             code: 20000,
             data: fileId
         }
-    }else {
+    } else {
         ctx.body = {
             code: 20000,
             data: '',
@@ -109,7 +109,7 @@ router.get('/delete', async (ctx, next) => {
     }
 })
 
-router.get('/length', async(ctx, next) => {
+router.get('/length', async (ctx, next) => {
     const query = `db.collection('qrcode').get()`
     const res = await callCloudDB(ctx, 'databasequery', query)
     console.log(res);

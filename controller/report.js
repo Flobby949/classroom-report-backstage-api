@@ -138,7 +138,8 @@ router.post("/updatescore", async (ctx, next) => {
   const params = ctx.request.body;
   const query = `db.collection('report').doc('${params._id}').update({
         data: {
-            score: '${params.value}'
+            score: ${params.value}
+
         }
         })`;
   const res = await callCloudDB(ctx, "databaseupdate", query);
@@ -161,9 +162,6 @@ router.post("/updatefeedback", async (ctx, next) => {
         }
         })`;
   const res = await callCloudDB(ctx, "databaseupdate", query);
-  console.log();
-  console.log();
-  console.log();
   console.log(res);
   ctx.body = {
     code: 20000,
@@ -175,7 +173,8 @@ router.post("/updatefeedback", async (ctx, next) => {
 router.post("/filtertime", async (ctx, next) => {
   const params = ctx.request.body;
   const query = `db.collection('report').where({
-    time: _.gte(${params.start}).and(_.lte(${params.end}))
+    time: _.gte(${params.start}).and(_.lte(${params.end+86400000})),
+    if: ${params.if}
   }).get()`;
   const res = await callCloudDB(ctx, "databasequery", query);
   ctx.body = {

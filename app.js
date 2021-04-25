@@ -6,7 +6,7 @@ const cors = require('koa2-cors')
 const koaBody = require('koa-body')
 // const ENV = 'jinhuiqian-8gi1cox44dde5a5a'
 
-const ENV = 'bainan-6gj8asqkd274ed17'
+const ENV = 'class-report-3g3uav0pccd26f10'
 
 // 跨域
 app.use(

@@ -17,7 +17,7 @@ router.post('/addCode', async (ctx, next) => {
         const newQR = await QRCode(ctx, params)
         let imgName = `QRCode-${params.scene}.png`;
         let fileName = `upload-${params.scene}`;
-        let path = `D:/myproject/classroom-report-backstage-api/QrCode`
+        let path = `/usr/deploy/classroom-report-backstage-api/QrCode`
         fs.writeFile(path + '/' + imgName, newQR, err => console.log(err))
         fs.writeFile(path + '/' + fileName, newQR, err => console.log(err))
         let file = {
@@ -110,10 +110,10 @@ router.get('/delete', async (ctx, next) => {
 })
 
 router.get('/length', async(ctx, next) => {
-    const query = `db.collection('qrcode').get()`
+    const query = `db.collection('qrcode').count()`
     const res = await callCloudDB(ctx, 'databasequery', query)
     console.log(res);
-    let length = res.data.length
+    let length = res.pager.Total
     ctx.body = {
         code: 20000,
         data: length

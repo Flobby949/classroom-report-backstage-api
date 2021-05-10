@@ -6,29 +6,63 @@ const callCloudDB = require("../utils/callCloudDB.js"); //引用访问小程序�
 //查询正常报告数量
 router.get("/nlistcount", async (ctx, next) => {
   const query = `
-    db.collection('report').where({if: 1}).get()`;
+    db.collection('report').where({if: 1}).count()`;
   const res = await callCloudDB(ctx, "databasequery", query);
   ctx.body = {
     code: 20000,
-    data: res.data,
+    data: res.pager.Total,
   };
 });
 
 //查询异常报告数量
 router.get("/alistcount", async (ctx, next) => {
   const query = `
-    db.collection('report').where({if: 2}).get()`;
+    db.collection('report').where({if: 2}).count()`;
   const res = await callCloudDB(ctx, "databasequery", query);
   ctx.body = {
     code: 20000,
-    data: res.data,
+    data: res.pager.Total,
   };
 });
 
 //查询未评分报告数量
 router.get("/unratedreport", async (ctx, next) => {
   const query = `
-    db.collection('report').where({score: ""}).get()`;
+    db.collection('report').where({score: 0}).count()`;
+  const res = await callCloudDB(ctx, "databasequery", query);
+  ctx.body = {
+    code: 20000,
+    data: res.pager.Total,
+  };
+});
+
+//查询未打扫报告数量
+router.get("/ncreportcount", async (ctx, next) => {
+  const query = `
+    db.collection('report').where({if: 3}).count()`;
+  const res = await callCloudDB(ctx, "databasequery", query);
+  ctx.body = {
+    code: 20000,
+    data: res.pager.Total,
+  };
+});
+
+//查询未处理报告数量
+router.get("/unprocessedreport", async (ctx, next) => {
+  const query = `
+    db.collection('report').where({status: "未处理"}).count()`;
+  const res = await callCloudDB(ctx, "databasequery", query);
+  ctx.body = {
+    code: 20000,
+    data: res.pager.Total,
+  };
+});
+
+//查询未处理报告列表
+router.get("/uplist", async (ctx, next) => {
+  const params = ctx.request.query;
+  const query = `
+    db.collection('report').where({status: '未处理'}).skip(${params.start}).limit(7).orderBy('time', 'desc').get()`;
   const res = await callCloudDB(ctx, "databasequery", query);
   ctx.body = {
     code: 20000,
@@ -36,10 +70,11 @@ router.get("/unratedreport", async (ctx, next) => {
   };
 });
 
-//查询未处理报告数量
-router.get("/unprocessedreport", async (ctx, next) => {
+//查询未打扫报告列表
+router.get("/nclist", async (ctx, next) => {
+  const params = ctx.request.query;
   const query = `
-    db.collection('report').where({status: "未处理"}).get()`;
+    db.collection('report').where({status: '未打扫'}).skip(${params.start}).limit(5).orderBy('time', 'desc').get()`;
   const res = await callCloudDB(ctx, "databasequery", query);
   ctx.body = {
     code: 20000,
@@ -51,7 +86,7 @@ router.get("/unprocessedreport", async (ctx, next) => {
 router.get("/nlist", async (ctx, next) => {
   const params = ctx.request.query;
   const query = `
-    db.collection('report').where({if: 1}).skip(${params.start}).orderBy('time', 'desc').get()`;
+    db.collection('report').where({if: 1,status: '已处理'}).skip(${params.start}).limit(7).orderBy('time', 'desc').get()`;
   const res = await callCloudDB(ctx, "databasequery", query);
   ctx.body = {
     code: 20000,
@@ -63,7 +98,7 @@ router.get("/nlist", async (ctx, next) => {
 router.get("/alist", async (ctx, next) => {
   const params = ctx.request.query;
   const query = `
-    db.collection('report').where({if: 2}).skip(${params.start}).orderBy('time', 'desc').get()`;
+    db.collection('report').where({if: 2,status: '已处理'}).skip(${params.start}).limit(7).orderBy('time', 'desc').get()`;
   const res = await callCloudDB(ctx, "databasequery", query);
   ctx.body = {
     code: 20000,
@@ -173,7 +208,7 @@ router.post("/updatefeedback", async (ctx, next) => {
 router.post("/filtertime", async (ctx, next) => {
   const params = ctx.request.body;
   const query = `db.collection('report').where({
-    time: _.gte(${params.start}).and(_.lte(${params.end+86400000})),
+    time: _.gte(${params.start}).and(_.lte(${params.end + 86400000})),
     if: ${params.if}
   }).get()`;
   const res = await callCloudDB(ctx, "databasequery", query);
@@ -195,5 +230,26 @@ router.post("/filter", async (ctx, next) => {
     data: res,
   };
 });
+
+// 添加未打扫记录
+router.post('/addNotClean', async (ctx, next) => {
+  const params = ctx.request.body
+  const query = `db.collection('report').add({
+            data: {
+                classroom: '${params.classroom}',
+                if: 3,
+                score: 0,
+                status: '未打扫',
+                time: ${params.time},
+                user_class: '${params.user_class}',
+                _openid: ''
+            }
+        })`
+  const res = await callCloudDB(ctx, 'databaseadd', query)
+  ctx.body = {
+    code: 20000,
+    data: res
+  }
+})
 
 module.exports = router;

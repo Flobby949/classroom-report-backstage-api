@@ -1,6 +1,6 @@
 const rp = require('request-promise')//先引用request-promise请求小程序后端
 const getAccessToken = require('./getAccessToken.js');//引用之前写的获取accesstoken
-const ENV = 'bainan-6gj8asqkd274ed17'
+const ENV = 'class-report-3g3uav0pccd26f10'
 
 // ctx，object类型， 为访问全局变量ctx.state.env//小程序云函数环境名
 // Name，string类型，为查询还是更新还是

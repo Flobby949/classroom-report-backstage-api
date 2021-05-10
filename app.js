@@ -6,15 +6,17 @@ const cors = require('koa2-cors')
 const koaBody = require('koa-body')
 // const ENV = 'jinhuiqian-8gi1cox44dde5a5a'
 
-const ENV = 'bainan-6gj8asqkd274ed17'
+const ENV = 'class-report-3g3uav0pccd26f10'
 
-// 跨域
-app.use(
-    cors({
-        origin: ['http://localhost:9528'],
-        credentials: true,
-    })
-)
+//跨域
+// app.use(
+//     cors({
+//         origin: ['http://localhost:9528'],
+//         credentials: true,
+//     })
+// )
+app.use(cors());
+
 
 // 接收post参数解析
 app.use(

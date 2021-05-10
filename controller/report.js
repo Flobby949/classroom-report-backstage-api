@@ -6,7 +6,7 @@ const callCloudDB = require("../utils/callCloudDB.js"); //引用访问小程序�
 //查询正常报告数量
 router.get("/nlistcount", async (ctx, next) => {
   const query = `
-    db.collection('report').where({if: 1}).count()`;
+    db.collection('report').where({if: 1,status: '已处理'}).count()`;
   const res = await callCloudDB(ctx, "databasequery", query);
   ctx.body = {
     code: 20000,
@@ -17,18 +17,7 @@ router.get("/nlistcount", async (ctx, next) => {
 //查询异常报告数量
 router.get("/alistcount", async (ctx, next) => {
   const query = `
-    db.collection('report').where({if: 2}).count()`;
-  const res = await callCloudDB(ctx, "databasequery", query);
-  ctx.body = {
-    code: 20000,
-    data: res.pager.Total,
-  };
-});
-
-//查询未评分报告数量
-router.get("/unratedreport", async (ctx, next) => {
-  const query = `
-    db.collection('report').where({score: 0}).count()`;
+    db.collection('report').where({if: 2,status: '已处理'}).count()`;
   const res = await callCloudDB(ctx, "databasequery", query);
   ctx.body = {
     code: 20000,

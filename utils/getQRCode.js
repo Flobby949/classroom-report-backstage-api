@@ -14,7 +14,6 @@ const QRCode = async (ctx, params) => {
         body: params,
         json: true
     }
-
     return await rp(options)
         .then((res) => {
             //rp是返回promise对象所以用then获取结果，因为是异步所以要加await才能进行返回或赋值

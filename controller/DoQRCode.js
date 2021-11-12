@@ -7,32 +7,34 @@ const fs = require('fs')
 
 router.post('/addCode', async (ctx, next) => {
     const params = ctx.request.body
-    console.log(params);
+    const college = params.college
+    delete params['college']
     const vaild = `db.collection('qrcode').where({
-        class_number: '${params.scene}'
+        class_number: '${params.scene}',
+        college: ${college}
     }).get()`
     const vaildRes = await callCloudDB(ctx, 'databasequery', vaild)
-    console.log(vaildRes);
     if (vaildRes.data.length == 0) {
         const newQR = await QRCode(ctx, params)
         let imgName = `QRCode-${params.scene}.png`;
         let fileName = `upload-${params.scene}`;
-        let path = `/usr/deploy/classroom-report-backstage-api/QrCode`
+        // let path = `/usr/deploy/classroom-report-backstage-api/QrCode`
+        let path = `E:/nodejs-Project/classroom-report-backstage-api/QrCodeFile`
         fs.writeFile(path + '/' + imgName, newQR, err => console.log(err))
         fs.writeFile(path + '/' + fileName, newQR, err => console.log(err))
+
         let file = {
             name: fileName,
             path: `${path}/${fileName}`
         }
         const fileId = await cloudStorage.uploadCode(file)
-        console.log(fileId);
-
         const query = `db.collection('qrcode').add({
         data: {
+            college: ${college},
             class_number: '${params.scene}',
             fileId: '${fileId}'
-        }
-    })`
+              }
+        })`
 
         const res = await callCloudDB(ctx, 'databaseadd', query)
         console.log(res);
@@ -40,7 +42,7 @@ router.post('/addCode', async (ctx, next) => {
             code: 20000,
             data: fileId
         }
-    }else {
+    } else {
         ctx.body = {
             code: 20000,
             data: '',
@@ -51,15 +53,17 @@ router.post('/addCode', async (ctx, next) => {
 
 router.get('/list', async (ctx, next) => {
     const params = ctx.request.query
-    console.log(params);
     const query = `db.collection('qrcode')
+            .where({
+                college: ${params.college}
+            })
             .skip(${params.start})
             .limit(${params.count})
             .orderBy('class_number','desc')
             .get()`
     const res = await callCloudDB(ctx, 'databasequery', query)
+    console.log(res);
     const data = res.data
-    console.log(data);
     if (data.length == 0) {
         ctx.body = {
             code: 20000,
@@ -81,13 +85,15 @@ router.get('/list', async (ctx, next) => {
                 download_url: download.file_list[i].download_url,
                 class_number: JSON.parse(data[i]).class_number,
                 fileid: download.file_list[i].fileid,
-                _id: JSON.parse(data[i])._id
+                _id: JSON.parse(data[i])._id,
+                college: JSON.parse(data[i]).college
             })
         }
         console.log(returnData);
         ctx.body = {
             code: 20000,
-            data: returnData
+            data: returnData,
+            total: res.pager.Total
         }
     }
 })
@@ -106,17 +112,6 @@ router.get('/delete', async (ctx, next) => {
             delDBRes,
             delStorageRes
         }
-    }
-})
-
-router.get('/length', async(ctx, next) => {
-    const query = `db.collection('qrcode').count()`
-    const res = await callCloudDB(ctx, 'databasequery', query)
-    console.log(res);
-    let length = res.pager.Total
-    ctx.body = {
-        code: 20000,
-        data: length
     }
 })
 

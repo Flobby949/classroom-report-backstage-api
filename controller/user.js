@@ -30,6 +30,7 @@ router.post('/addAdmin', async (ctx, next) => {
                 username: '${params.username}',
                 create_time: '${dt}',
                 authority: '0',
+                college: ${params.college},
                 wx_openid: ''
             }
         })`
@@ -73,14 +74,14 @@ router.post('/loginByJN', async (ctx, next) => {
             }
         } else {
             ctx.body = {
-                code: 20000,
-                data: "密码错误"
+                code: 30000,
+                message: "密码错误"
             }
         }
     } else {
         ctx.body = {
-            code: 20000,
-            data: "用户不存在"
+            code: 30000,
+            message: "用户不存在"
         }
     }
 })
@@ -112,14 +113,14 @@ router.post('/loginByPhone', async (ctx, next) => {
             }
         } else {
             ctx.body = {
-                code: 20000,
-                data: "密码错误"
+                code: 30000,
+                message: "密码错误"
             }
         }
     } else {
         ctx.body = {
-            code: 20000,
-            data: "用户不存在"
+            code: 30000,
+            message: "用户不存在"
         }
     }
 })

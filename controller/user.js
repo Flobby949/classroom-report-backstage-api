@@ -218,11 +218,11 @@ router.get('/list', async (ctx, next) => {
             .skip(${params.start})
             .limit(${params.count})
             .orderBy('authority','desc')
-            .orderBy('create_time','asc')
+            .orderBy('create_time','desc')
             .get()
             `
     const res = await callCloudDB(ctx, 'databasequery', query)
-    console.log(res);
+    const total = res.pager.Total
     // 序列化管理员对象数组
     let data = []
     for (let i = 0, len = res.data.length; i < len; i++) {
@@ -232,6 +232,7 @@ router.get('/list', async (ctx, next) => {
     }
     ctx.body = {
         data,
+        total,
         code: 20000,
     }
 })
